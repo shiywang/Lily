@@ -1,0 +1,38 @@
+存储操作类指令:
+lda		load address;
+ldc		load constant;
+lod		load value;
+sto		store then pop;
+stn		store not pop;
+
+ind		a    ind i  --->  *(a+i)  
+ixa		a,i    ixa s  --->  a+s*i 
+
+算数类指令:
+mpi		multiple from the stack (P,Q)
+sbi		subtract from the stack (P,Q)
+adi  		add from the stack (P,Q)
+dvi		divide from the stack (P,Q)
+
+跳转类指令:
+lab 		label
+ujp		unconditional jump;
+fjp		false jump;
+leq 		less equal jump;
+les		less jump;
+grt		greater than jump;
+geq		greater equal jump;
+equ		equal jump;
+neq		not euqal jump;
+ent		enter the function
+cal		function call		
+ret		return the function
+
+
+//读写指令
+//wri		write int
+//rdi		read int
+
+其他类指令:
+mst		function change stack pointer
+stp		stop ^^ halt;

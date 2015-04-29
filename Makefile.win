@@ -1,0 +1,46 @@
+# Project: lilyc
+# Makefile created by Dev-C++ 5.10
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+OBJ      = src/error.o src/parse.o src/symbol.o src/lily.o src/tex.o src/gen.o src/vm.o
+LINKOBJ  = src/error.o src/parse.o src/symbol.o src/lily.o src/tex.o src/gen.o src/vm.o
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib32" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -m32 -g3
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.8.1/include"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.8.1/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.8.1/include/c++"
+BIN      = lilyc.exe
+CXXFLAGS = $(CXXINCS) -m32 -g3
+CFLAGS   = $(INCS) -m32 -g3
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+src/error.o: src/error.c
+	$(CC) -c src/error.c -o src/error.o $(CFLAGS)
+
+src/parse.o: src/parse.c
+	$(CC) -c src/parse.c -o src/parse.o $(CFLAGS)
+
+src/symbol.o: src/symbol.c
+	$(CC) -c src/symbol.c -o src/symbol.o $(CFLAGS)
+
+src/lily.o: src/lily.c
+	$(CC) -c src/lily.c -o src/lily.o $(CFLAGS)
+
+src/tex.o: src/tex.c
+	$(CC) -c src/tex.c -o src/tex.o $(CFLAGS)
+
+src/gen.o: src/gen.c
+	$(CC) -c src/gen.c -o src/gen.o $(CFLAGS)
+
+src/vm.o: src/vm.c
+	$(CC) -c src/vm.c -o src/vm.o $(CFLAGS)

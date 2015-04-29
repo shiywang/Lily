@@ -1,0 +1,6 @@
+int main(int arg, pint a)
+{
+	if( a > 10 )
+		a = 12;
+	a = 13;
+}

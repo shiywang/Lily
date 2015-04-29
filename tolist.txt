@@ -1,0 +1,31 @@
+1.构思阶段
+	已完成
+
+
+2.编码阶段
+	ind, ixa 实现
+	write ,read函数  参数虚拟机问题
+	call 通用函数
+	argc argv 实现
+	write_binary_struct_code 实现
+	
+3.单元测试阶段
+	
+	使用google 测试框架
+
+4.code review 阶段
+
+	把代码的质量 参考 《程序设计实践》 《代码大全》  《C专家编程》 《C缺陷与陷阱》  《C与指针》
+
+
+5.以后要做的
+	优化virtual_get_token
+	优化虚拟start_vm操作
+	char 类型
+
+	指针 虚拟机实现
+	函数指针 虚拟机实现
+	宏
+	JIT技术
+	typedef
+	struct

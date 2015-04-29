@@ -1,0 +1,1 @@
+http://bitsavers.informatik.uni-stuttgart.de/pdf/stanford/sel_techReports/TN164_A_Pascal_P-Code_Interpreter_for_the_Stanford_Emmy_Sep79.pdf

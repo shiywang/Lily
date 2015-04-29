@@ -1,0 +1,16 @@
+int main() 
+{	
+	int i;
+	b = &a;
+	c = *b;
+	x = -c;
+	if( b < 100 )
+		for( b = 0; *b; b = b * 2)
+		{
+			* b = * b +1;
+		}
+	for(i = 1; i< 10; i= i+1 )
+		*a = 12 * i;
+	fun( a, b, c );
+
+}
