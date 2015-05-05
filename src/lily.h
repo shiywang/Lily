@@ -147,7 +147,7 @@ typedef struct FuncInfo
 typedef struct Symbol
 {
 	char name[NAME_SIZE];
-	int type;// function or global
+	int type;
 	union{
 		FuncInfo f;
 		GlobalInfo g;
@@ -218,15 +218,5 @@ extern char save_word[100];
 extern char test[][100];
 extern int  get_token();
 extern int  virtual_get_token();
-
-
-
-
-
-
-
-
-
-//FILE *output_fp = NULL;
 
 #endif

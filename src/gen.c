@@ -134,7 +134,6 @@ void emit_neq(int label)
 	CODE_ASSIGN(OP_NEQ,label);
 }
 
-////////////////////////////
 void emit_ent(int func)
 {
 	CODE_ASSIGN(OP_ENT,func);
@@ -155,9 +154,9 @@ void emit_stp()
 	CODE_ASSIGN(OP_STP,-1);
 }
 
-void emit_mst()
+void emit_mst(int offset)
 {
-	CODE_ASSIGN(OP_MST,-1);
+	CODE_ASSIGN(OP_MST,offset);
 }
 
 
@@ -178,6 +177,8 @@ void realloc_struct_code()
 	}
 	code = p;
 }
+
+//#define DEBUG
 
 void gen_code(const char *fmt, ...)
 {
@@ -260,7 +261,7 @@ void gen_code(const char *fmt, ...)
 					emit_mpi();
 					break;
 				case 's':
-					emit_mst();
+					emit_mst(num);
 					break;
 			}
 			break;
@@ -370,7 +371,9 @@ void process_struct_code()
 	
 	for(i = 0; i < code_line; i++){
 		if(code[i].op == OP_CAL){
-			code[i].value = func[code[i].value];
+			if(code[i].value != -10 && code[i].value != -11 && code[i].value != -12){
+				code[i].value = func[code[i].value];
+			}
 		}	
 	}
 	

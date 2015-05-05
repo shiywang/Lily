@@ -7,11 +7,13 @@
 #define MAX_INPUT_LEN 1000 
 #define RESEVER_WORD_NUM 11
 
+extern FILE *stream;
+
 char * resever_word[] = 
 {
  "int",   "char", "void", "pint", "pchar", 
  "pvoid", "if",   "else", "for",  "while", 
- "return","read","write",
+ "return",
 };		
 
 
@@ -21,6 +23,8 @@ int save_num;
 int save_line;
 
 static char input_line[105];
+static char virtual_input_line[105];
+
 static int input_len;
 static int pos;
 static int vpos;
@@ -42,7 +46,7 @@ static int get_next_word(int *p)
 {
     if( *p >= input_len )
 	{
-        if(fgets(input_line,MAX_INPUT_LEN,stdin))
+        if(fgets(input_line,MAX_INPUT_LEN,stream))
 		{	
             *p = 0;
 			save_line++;
@@ -57,6 +61,28 @@ static int get_next_word(int *p)
 		}
 	}else{
         return input_line[(*p)++];
+    }
+}
+
+static int get_next_virtual_word(int *p)
+{
+    if( *p >= input_len )
+	{
+        if(fgets(virtual_input_line,MAX_INPUT_LEN,stream))
+		{	
+            *p = 0;
+			save_line++;
+            input_len = strlen(virtual_input_line);
+            if(input_len > MAX_INPUT_LEN){
+				fprintf( stderr, "input_line out of max range\n" );
+				exit( 0 ); 
+			}
+            return virtual_input_line[(*p)++];
+		}else{
+			return FINISH;
+		}
+	}else{
+        return virtual_input_line[(*p)++];
     }
 }
 
@@ -283,6 +309,7 @@ int virtual_get_token(int clear)
     }
     
     if(first_invoke){
+    	strcpy(virtual_input_line,input_line); 
     	vpos = pos;
     	first_invoke = false;
     }
@@ -303,11 +330,11 @@ int virtual_get_token(int clear)
             }
             if( pause_block )
             {
-                while( (c = get_next_word(&vpos)) != FINISH )
+                while( (c = get_next_virtual_word(&vpos)) != FINISH )
                 {
-                    if( c == '*' && input_line[vpos] == '/' )
+                    if( c == '*' && virtual_input_line[vpos] == '/' )
                     {
-                        input_line[vpos++];
+                        virtual_input_line[vpos++];
                         break;
                     }
                 }
@@ -317,7 +344,7 @@ int virtual_get_token(int clear)
                 state = START;
             }
         }
-        c = get_next_word(&vpos);
+        c = get_next_virtual_word(&vpos);
         if( c == FINISH )
             return FINISH;
         if( c == ' ' || c == '\t' || c == '\n' )
@@ -329,7 +356,7 @@ int virtual_get_token(int clear)
             do
             {
                 virtual_save_word[i++] = c;
-                c = input_line[vpos++];
+                c = virtual_input_line[vpos++];
                 max_word_len++;
             }while( isdigit( c ) || c == '_' || isalpha( c ) );
             vpos--;
@@ -350,7 +377,7 @@ int virtual_get_token(int clear)
             while( isdigit( c ) )
             {
                 virtual_save_word[i++] = c;
-                c = input_line[vpos++];
+                c = virtual_input_line[vpos++];
             }
             vpos--;
             virtual_save_word[i] = '\0';
@@ -374,15 +401,15 @@ int virtual_get_token(int clear)
                     token = TOK_MUL;
                     break;
                 case '/':
-                    if( input_line[vpos] == '/' )
+                    if( virtual_input_line[vpos] == '/' )
                     {
-                        input_line[vpos++];
+                        virtual_input_line[vpos++];
                         state = PAUSE;
                         pause_line = 1;
                     }
-                    else if( input_line[vpos] == '*' )
+                    else if( virtual_input_line[vpos] == '*' )
                     {
-                        input_line[vpos++];
+                        virtual_input_line[vpos++];
                         state = PAUSE;
                         pause_block = 1;
                     }
@@ -392,54 +419,54 @@ int virtual_get_token(int clear)
                     }
                     break;
                 case '=':
-                    if( input_line[vpos] == '=' )
+                    if( virtual_input_line[vpos] == '=' )
                     {
-                        input_line[vpos++];
+                        virtual_input_line[vpos++];
                         token = TOK_EQ;
                     }
                     else
                         token = TOK_ASSIGN;
                     break;
                 case '>':
-                    if( input_line[vpos] == '=' )
+                    if( virtual_input_line[vpos] == '=' )
                     {
-                        input_line[vpos++];
+                        virtual_input_line[vpos++];
                         token = TOK_GE;
                     }
                     else
                         token = TOK_GT;
                     break;
                 case '<':
-                    if( input_line[vpos] == '=' )
+                    if( virtual_input_line[vpos] == '=' )
                     {
-                        input_line[vpos++];
+                        virtual_input_line[vpos++];
                         token = TOK_LE;
                     }
                     else
                         token = TOK_LT;
                     break;
                 case '!':
-                    if( input_line[vpos] == '=' )
+                    if( virtual_input_line[vpos] == '=' )
                     {
-                        input_line[vpos++];
+                        virtual_input_line[vpos++];
                         token = TOK_NE;
                     }
                     else
                         token = TOK_NOT;
                     break;
                 case '&':
-                    if( input_line[vpos] == '&' )
+                    if( virtual_input_line[vpos] == '&' )
                     {
-                        input_line[vpos++];
+                        virtual_input_line[vpos++];
                         token = TOK_ANDAND;
                     }
                     else
                         token = TOK_AND;
                     break;
                 case '|':
-                    if( input_line[vpos] == '|' )
+                    if( virtual_input_line[vpos] == '|' )
                     {
-                        input_line[vpos++];
+                        virtual_input_line[vpos++];
                         token = TOK_OROR;
                     }
                     else

@@ -62,7 +62,7 @@ static int get_label()
 static inline int SIZE(int c)
 {
 	if(c == TOK_INT)
-		return 4;
+		return 1;		//temp set int to 1
 	if(c == TOK_CHAR)
 		return 1;
 	if(c == TOK_PINT || c == TOK_PCHAR || c == TOK_PVOID)
@@ -128,6 +128,7 @@ static void declaration(int type)
 	if(token == TOK_LPAREN){
 		
 	    fun_declaration(type, id);
+	    
 	    if(!strcmp(id,"main")){
 			main_stack = current_function->u.f.total_offset;
 		}
@@ -153,8 +154,7 @@ static void fun_declaration(int type, char * id)
 	if(type != TOK_VOID)
 		has_return_value = false;
 			
-	
-	
+	// init AutoOffset
 	memset(&offset,0,sizeof(AutoOffset));
 
 	current_function = insert_global_sym(FUNCTION,id);
@@ -176,7 +176,8 @@ static void fun_declaration(int type, char * id)
 	/*match ) */
 	match(TOK_RPAREN);
 	
-	current_function->u.f.total_offset = current_function->u.f.param_size;
+	//add after insert auto_var
+	//current_function->u.f.total_offset += current_function->u.f.param_size;
 	
 	compound_stmt();
 	
@@ -302,18 +303,18 @@ static void compound_stmt()
     ListHead *t = NULL;
 	
 	/* match { */
-	match( TOK_LBRACKET );	
+	match( TOK_LBRACKET );
 	
 	while(token==TOK_INT||token==TOK_CHAR 
 	    ||token==TOK_PINT||token==TOK_PCHAR)
 	{	
 		t = local_var_declaration(token);
 	    insert_local_var(t,&offset,&(current_function->u.f.auto_head));
-		current_function->u.f.total_offset += offset.local_total_offset;	
 		offset.current_level++;
 		offset.current_block++;
 	}
 	
+	current_function->u.f.total_offset = offset.local_total_offset;
 	
 	statement_list();
 	/* match } */
@@ -382,14 +383,14 @@ static void statement_list()
 
 static void statement()
 {
-	int second_token = virtual_get_token(true);
+	int second_token;
 	
 	if(token == TOK_IF){
 		selection_stmt();
 	}else if(token == TOK_LBRACKET){
 		compound_stmt();
 	}else if(token == TOK_ID||token == TOK_AND){
-		// token == TOK_AND undeal
+		second_token = virtual_get_token(true);
 		if(second_token == TOK_ASSIGN){
 			assign_stmt();
 		}else if(second_token == TOK_LSQUARE){
@@ -798,7 +799,7 @@ static void var()
 	        fprintf(stderr, "line %d: can't find var %s\n", save_line, save_word);
 	    }
 	    
-	    if(before_assign && !var_in_square){
+	    if((before_assign && !var_in_square) || var_in_read_write){
 	    	
 	    	gen_code("lda %d\n", var_addr);
 	    	
@@ -819,20 +820,30 @@ static void call()
 	
 	strcpy(func_name,save_word);
 	match(TOK_ID);
-    gen_code("mst\n");
-	match(TOK_LPAREN);
-	args();
-	match(TOK_RPAREN);
+	
 	f = lookup_global_sym(FUNCTION,func_name);
 	if(!f){
 		fprintf(stderr,"can not call func %s", func_name);
 	}
+	
+	if(strcmp(save_word,"read") && strcmp(save_word,"write")){
+    	gen_code("mst %d\n", f->u.f.total_offset*10000 + f->u.f.param_size);
+    }else{
+    	var_in_read_write = true;
+    }
+    
+	match(TOK_LPAREN);
+	args();
+	match(TOK_RPAREN);
+	
+	var_in_read_write = false;
+	
 	gen_code("cal %d\n",f->u.f.id);
 }
 
 static void args()
 {
-	if(token == TOK_ID)
+	if(token == TOK_ID||token == TOK_NUM)
 	{
 		expression();
 		while(token == TOK_COMMA)

@@ -43,22 +43,85 @@ void init_vm()
 #define DEC4(x)	do { \
 				x -= 4;  \
 			    } while ( 0 )
+			    
+typedef struct PointerStack{
+	int bp;
+	int sp;
+}PointerStack;
+
+int ptop = 0;
+PointerStack pstack[100];
 
 void start_vm()
 {
 	int i = main_enter;
+	int old_bp, old_sp, param_offset, auto_offset;
+	int stack[100];//stack for save args
+	int return_value, not_main_return = false;
+	int j, top, x, offset_addr;
+	int current_code = -1;
 	
 	while(code[i].op != OP_STP)
 	{
 		if(IN_JUMP(code[i].op) || code[i].op == OP_CAL){
 			if(code[i].op == OP_CAL){
-				//if(code[i].value == -11){
-				//	scanf("%d", mem[bp+sp])
-				//}else if(code[i].value == -12){
-				//	//write
-				//}else{
-					//正常函数调用 
-				//}
+				if(code[i].value == -11){
+					scanf("%d", &mem[mem[bp+sp-1]]);
+					sp-=1;
+					i++;
+				}else if(code[i].value == -12){
+					if(code[i-1].op == OP_LDC){					
+						printf("%d", mem[bp+sp-1]);
+					}else{
+						printf("%d", mem[mem[bp+sp-1]]);
+					}
+					sp-=1;
+					i++;
+				}else{
+					/* save current code */
+					current_code = i;
+					not_main_return = true;
+		
+					/* save args */
+					top = 0;
+					j = param_offset;
+					while(j--){
+						stack[top++] = mem[bp+sp-1];
+						sp--; 
+					}
+					
+					/*
+					for(j = i-1, top = 0; code[j].op != OP_MST; j--){
+						if(code[j].op == OP_LOD){
+								if(code[j].value >= STACK_BASE){
+									offset_addr = code[j].value - STACK_BASE;
+								}
+								stack[top++] = mem[bp+offset_addr];			
+						}else{	// OP_LDA
+							// not support yet
+						}
+						sp--;
+					}*/
+					
+					/* save old stack bp sp*/
+					pstack[ptop].bp = bp;
+					pstack[ptop].sp = sp;
+					ptop++;
+					/* change stack */
+					bp += FUNCTION_SEGMENT;
+					
+					/* args to param */
+					x = bp;
+					while(top){
+						mem[x++] = stack[top-1];
+						top--;
+					}
+					/* change sp */
+					sp = auto_offset + param_offset;
+					
+					/* jump to function code */
+					i = code[i].value;
+				}
 			}else{
 				switch(code[i].op)
 				{
@@ -66,31 +129,60 @@ void start_vm()
 						i = code[i].value;
 						break;
 					case OP_FJP:
-						!mem[bp+sp] ? i = code[i].value : 1;  
+						if(!mem[bp+sp-1]){
+						 	i = code[i].value;
+						}else{
+							i++;
+						}
+						sp -= 1;  
 						break;
 					case OP_LEQ:
-						mem[bp+sp] <= mem[bp+sp-4] ? i = code[i].value : 1 ;
-						sp -= 8;
+						if(mem[bp+sp-2] <= mem[bp+sp-1]){
+							i = code[i].value;
+						}else{
+							i++;
+						}
+						sp -= 2;
 						break;
-					case OP_LES:
-						mem[bp+sp] < mem[bp+sp-4] ? i = code[i].value : 1 ;
-						sp -= 8;
+					case OP_LES://
+						if(mem[bp+sp-2] < mem[bp+sp-1]){
+							i = code[i].value;
+						}else{
+							i++;
+						}
+						sp -= 2;
 						break;
 					case OP_GRT:
-						mem[bp+sp] > mem[bp+sp-4] ? i = code[i].value : 1 ;
-						sp -= 8;
+						if(mem[bp+sp-2] > mem[bp+sp-1]){
+							i = code[i].value;
+						}else{
+							i++;
+						}
+						sp -= 2;
 						break;
 					case OP_GEQ:
-						mem[bp+sp] >= mem[bp+sp-4] ? i = code[i].value : 1 ;
-						sp -= 8;
+						if(mem[bp+sp-2] >= mem[bp+sp-1]){
+							i = code[i].value;
+						}else{
+							i++;
+						}
+						sp -= 2;
 						break;
 					case OP_EQU:
-						mem[bp+sp] == mem[bp+sp-4] ? i = code[i].value : 1 ;
-						sp -= 8;
+						if(mem[bp+sp-2] == mem[bp+sp-1]){
+							i = code[i].value;
+						}else{
+							i++;
+						}
+						sp -= 2;
 						break;
 					case OP_NEQ:
-						mem[bp+sp] != mem[bp+sp-4] ? i = code[i].value : 1 ;
-						sp -= 8;
+						if(mem[bp+sp-2] != mem[bp+sp-1]){
+							i = code[i].value;
+						}else{
+							i++;
+						}
+						sp -= 2;
 						break;
 					default:
 						break;
@@ -102,56 +194,83 @@ void start_vm()
 			switch(code[i].op)
 			{
 				case OP_LDA:
-					mem[bp+(sp+=4)] = code[i].value;
+					if(code[i].value >= STACK_BASE){
+						offset_addr = code[i].value - STACK_BASE;
+						mem[bp+sp] = bp + offset_addr;
+					}else{
+						mem[bp+sp] = code[i].value;
+					}
+					sp++;
 					break;
 				case OP_LDC:
-					mem[bp+(sp+=4)] = code[i].value;
+					mem[bp+sp] = code[i].value;
+					sp++;
 					break;
 				case OP_LOD:
-					mem[bp+(sp+=4)] = mem[code[i].value];
+					if(code[i].value >= STACK_BASE){
+						offset_addr = code[i].value - STACK_BASE;
+						mem[bp+sp] = mem[bp+offset_addr];
+					}else{
+						mem[bp+sp] = mem[code[i].value];
+					}		
+					sp++;
 					break;
 				case OP_STO:
-					mem[mem[bp+sp-4]] = mem[bp+sp];
-					sp -= 8;
+					mem[mem[bp+sp-2]] = mem[bp+sp-1];
+					sp-=2;
 					break;
 				case OP_STN:
-					mem[mem[bp+sp-4]] = mem[bp+sp];
-					sp -= 4; 
+					mem[mem[bp+sp-2]] = mem[bp+sp-1];
+					sp--; 
 					break;
-				//case OP_IND:
-				//	break;
-				//case OP_IXA:
-				//	break;
-				case OP_MPI:
-					mem[sp-4] = mem[bp+sp] * mem[bp+sp-4];
+				case OP_IND:
+					mem[bp+sp-1] = mem[mem[bp+sp-1]+code[i].value];
+					break;
+				case OP_IXA:
+					mem[bp+sp-2] += (code[i].value * mem[bp+sp-1]);
 					sp--;
+					break;
+				case OP_MPI:
+					mem[bp+sp-2] = mem[bp+sp-2] * mem[bp+sp-1];
+					sp-=1;
 					break;
 				case OP_SBI:
-					mem[sp-4] = mem[bp+sp] - mem[bp+sp-4];
-					sp--;
+					mem[bp+sp-2] = mem[bp+sp-2] - mem[bp+sp-1];
+					sp-=1;
 					break;
 				case OP_ADI:
-					mem[sp-4] = mem[bp+sp] + mem[bp+sp-4];
-					sp--;
+					mem[bp+sp-2] = mem[bp+sp-2] + mem[bp+sp-1];
+					sp-=1;
 					break;
 				case OP_DVI:
-					mem[sp-4] = mem[bp+sp] / mem[bp+sp-4];
-					sp--;
+					mem[bp+sp-2] = mem[bp+sp-2] / mem[bp+sp-1];
+					sp-=1;
 					break;
-				case OP_LAB:	
+				case OP_LAB:
+					//do nothing	
 					break;
 				case OP_ENT:
 					//sp = code[i].value;
 					break;
 				case OP_MST:
-					bp += FUNCTION_SEGMENT;
+					auto_offset = code[i].value / 10000;
+					param_offset = code[i].value % 10000;
 					break;
 				case OP_RET:
-					bp -= FUNCTION_SEGMENT;
+					return_value = mem[bp+sp-1];
+					bp = pstack[ptop-1].bp;
+					sp = pstack[ptop-1].sp;
+					ptop--;
+					mem[bp+sp] = return_value;
+					sp++;
+					if(not_main_return){
+						i = current_code;
+						not_main_return = false;
+					}
 					break;
 				default:
-					fprintf(stderr, "no exit OP\n");
-					break;	
+					fprintf(stderr, "Not exist OP\n");
+					break;
 			}
 			i++;		
 		}		

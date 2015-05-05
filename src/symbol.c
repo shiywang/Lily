@@ -136,8 +136,7 @@ void insert_local_var(ListHead *new, AutoOffset *a, ListHead *head)
 	auto_var->seq = a->local_seq;
 	auto_var->block_no = a->current_block;
 	auto_var->level = a->current_level;
-	auto_var->offset = STACK_BASE + a->local_total_offset;
-	
+	auto_var->offset = current_function->u.f.param_size + STACK_BASE + a->local_total_offset;
 	a->local_total_offset += auto_var->size;
 	a->local_seq++;
 	
