@@ -1,5 +1,5 @@
 
-Lily is a C like complier based on virtual machine
+Lily is a C like complier based on a simple virtual machine
 
 http://github.com/chenai/lily
 
