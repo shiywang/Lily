@@ -5,3 +5,6 @@
 
 .DS_Store
 src/.DS_Store
+src/*.o
+*.o
+Test/*.o
