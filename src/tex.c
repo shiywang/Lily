@@ -14,7 +14,7 @@ char * resever_word[] =
  "int",   "char", "void", "pint", "pchar", 
  "pvoid", "if",   "else", "for",  "while", 
  "return",
-};		
+};        
 
 
 char save_word[100];
@@ -34,32 +34,32 @@ int first_invoke = true;
 
 static int is_resever_word(char * word)
 {
-	int i;
-	for(i = 0; i < RESEVER_WORD_NUM; i++){
-		if(!strcmp(resever_word[i], word))
-				return i+1;
-	}
-	return -1; 
+    int i;
+    for(i = 0; i < RESEVER_WORD_NUM; i++){
+        if(!strcmp(resever_word[i], word))
+                return i+1;
+    }
+    return -1; 
 }
 
 static int get_next_word(int *p)
 {
     if( *p >= input_len )
-	{
+    {
         if(fgets(input_line,MAX_INPUT_LEN,input_stream))
-		{	
+        {    
             *p = 0;
-			save_line++;
+            save_line++;
             input_len = strlen(input_line);
             if(input_len > MAX_INPUT_LEN){
-				fprintf( stderr, "input_line out of max range\n" );
-				exit( 0 ); 
-			}
+                fprintf( stderr, "input_line out of max range\n" );
+                exit( 0 ); 
+            }
             return input_line[(*p)++];
-		}else{
-			return FINISH;
-		}
-	}else{
+        }else{
+            return FINISH;
+        }
+    }else{
         return input_line[(*p)++];
     }
 }
@@ -67,21 +67,21 @@ static int get_next_word(int *p)
 static int get_next_virtual_word(int *p)
 {
     if( *p >= input_len )
-	{
+    {
         if(fgets(virtual_input_line,MAX_INPUT_LEN,input_stream))
-		{	
+        {    
             *p = 0;
-			save_line++;
+            save_line++;
             input_len = strlen(virtual_input_line);
             if(input_len > MAX_INPUT_LEN){
-				fprintf( stderr, "input_line out of max range\n" );
-				exit( 0 ); 
-			}
+                fprintf( stderr, "input_line out of max range\n" );
+                exit( 0 ); 
+            }
             return virtual_input_line[(*p)++];
-		}else{
-			return FINISH;
-		}
-	}else{
+        }else{
+            return FINISH;
+        }
+    }else{
         return virtual_input_line[(*p)++];
     }
 }
@@ -258,10 +258,10 @@ int get_token()
                 case ';':
                     token = TOK_SEMI;
                     break;
-                case 39:	//  '
+                case 39:    //  '
                     token = TOK_SQUTOA;
                     break;
-                case 34:	//  "
+                case 34:    //  "
                     token = TOK_DQUTOA;
                     break;
                 case '(':
@@ -304,18 +304,18 @@ int virtual_get_token(int clear)
     pause_block = 0;
     
     if(clear){
-    	vpos = pos;
-    	first_invoke = true;
+        vpos = pos;
+        first_invoke = true;
     }
     
     if(first_invoke){
-    	strcpy(virtual_input_line,input_line); 
-    	vpos = pos;
-    	first_invoke = false;
+        strcpy(virtual_input_line,input_line); 
+        vpos = pos;
+        first_invoke = false;
     }
     
     if(state == OVER){
-    	return TOK_EOF;
+        return TOK_EOF;
     }
 
     while(state != OVER)
@@ -481,10 +481,10 @@ int virtual_get_token(int clear)
                 case ';':
                     token = TOK_SEMI;
                     break;
-                case 39:	//  '
+                case 39:    //  '
                     token = TOK_SQUTOA;
                     break;
-                case 34:	//  "
+                case 34:    //  "
                     token = TOK_DQUTOA;
                     break;
                 case '(':
