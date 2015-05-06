@@ -7,7 +7,7 @@
 #define MAX_INPUT_LEN 1000 
 #define RESEVER_WORD_NUM 11
 
-extern FILE *stream;
+extern FILE *input_stream;
 
 char * resever_word[] = 
 {
@@ -46,7 +46,7 @@ static int get_next_word(int *p)
 {
     if( *p >= input_len )
 	{
-        if(fgets(input_line,MAX_INPUT_LEN,stream))
+        if(fgets(input_line,MAX_INPUT_LEN,input_stream))
 		{	
             *p = 0;
 			save_line++;
@@ -68,7 +68,7 @@ static int get_next_virtual_word(int *p)
 {
     if( *p >= input_len )
 	{
-        if(fgets(virtual_input_line,MAX_INPUT_LEN,stream))
+        if(fgets(virtual_input_line,MAX_INPUT_LEN,input_stream))
 		{	
             *p = 0;
 			save_line++;

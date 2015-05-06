@@ -6,13 +6,13 @@
 #include "lily.h"
 
 
-
 #define MAX_LABEL_SIZE 1000
 #define MAX_FUNC_SIZE 1000
 
 
 extern Symbol* current_function;
-
+extern FILE *output_stream;
+extern int gen_op_code;
 
 StructCode *code;
 int code_line = 0;
@@ -187,11 +187,12 @@ void gen_code(const char *fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	
-#ifdef DEBUG
-	if(!(fmt[0] == 'l' && fmt[1] == 'a' && fmt[2] == 'b'))
-		printf("  ");
-	vprintf(fmt, ap);
-#else
+	if(gen_op_code){
+		if(!(fmt[0] == 'l' && fmt[1] == 'a' && fmt[2] == 'b'))
+			printf("  ");
+		vfprintf(output_stream,fmt, ap);
+		return ;
+	}
 	
 	strncpy(op_name,fmt,3);
 	int num = va_arg(ap,int);
@@ -314,7 +315,6 @@ void gen_code(const char *fmt, ...)
 			fprintf(stderr, "Does not exist OpCode: %s\n",op_name);
 			break;			
 	}	
-#endif
 	va_end(ap);
 }
 

@@ -1,12 +1,8 @@
 #ifndef LILY_H
 #define LILY_H
 
-/* 
-	resever word token: 
-	must be the same order 
-	as resever_word[] in tex.c, 
-	but begin from 1.
-*/
+
+/* WARNING: relative order of these token is important. */
 #define TOK_INT            1	    
 #define TOK_CHAR           2
 #define TOK_VOID           3
@@ -21,12 +17,8 @@
 #define TOK_READ		   12
 #define TOK_WRITE		   13
 
-/*
-	symbol token: 
-	the subscript is 
-	arbitrary only if
-	continuous.
-*/
+
+
 #define TOK_ID			   40
 #define TOK_NUM            41		
 #define TOK_ASSIGN         42	
@@ -106,8 +98,8 @@ typedef struct ParamInfo
 	int seq;
 	int offset;
 	int is_array;
-    int is_pointer;
-    ListHead param_list;
+	int is_pointer;
+	ListHead param_list;
 }ParamInfo;
 
 typedef struct AutoInfo
@@ -119,9 +111,9 @@ typedef struct AutoInfo
 	int offset;
 	int is_array;
 	int is_pointer;
-    int level;   /*depth*/
+	int level;   /*depth*/
 	int block_no;/*belong which block*/
-    ListHead auto_list;
+	ListHead auto_list;
 }AutoInfo;
 
 typedef struct GlobalInfo
@@ -138,10 +130,10 @@ typedef struct FuncInfo
 {
 	int id;
 	int total_offset;
-    ListHead param_head;
-    ListHead auto_head;
-    int return_type;
-    int param_size;
+	ListHead param_head;
+	ListHead auto_head;
+	int return_type;
+	int param_size;
 }FuncInfo;
 
 typedef struct Symbol
@@ -156,8 +148,8 @@ typedef struct Symbol
 
 typedef struct SymbolTable
 {
-    Symbol * value;
-    struct SymbolTable * next;
+	Symbol * value;
+	struct SymbolTable * next;
 }SymbolTable;
 
 //--------------
