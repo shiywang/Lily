@@ -27,14 +27,14 @@
          |-vm.c         虚拟机程序
          
          函数执行周期：
-         init_hash  
-         init_sym_table       
-         malloc_struct_code  
-         get_token
-         program    
-         process_struct_code  
-         init_vm            
-         start_vm
+         init_hash      全局哈希表的初始化  
+         init_sym_table 符号表的初始化      
+         malloc_struct_code  目标代码的内存初始化
+         get_token      词法分析读取token
+         program        语法制导分析函数
+         process_struct_code  目标代码处理函数
+         init_vm        虚拟机初始化函数
+         start_vm       虚拟机执行函数
 
 
 
