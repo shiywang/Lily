@@ -25,7 +25,7 @@
          |-tex.c        词法分析文件
          |-version.h    软件版本定义
          |-vm.c         虚拟机程序
-         
+'''         
 ####函数执行周期：
 init_hash  
 init_sym_table       
@@ -35,5 +35,7 @@ program
 process_struct_code  
 init_vm            
 start_vm
+
+'''
 
 
