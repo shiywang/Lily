@@ -1,7 +1,6 @@
 #ifndef LILY_H
 #define LILY_H
 
-
 /* WARNING: relative order of these token is important. */
 #define TOK_INT            1	    
 #define TOK_CHAR           2
@@ -152,7 +151,7 @@ typedef struct SymbolTable
 	struct SymbolTable * next;
 }SymbolTable;
 
-//--------------
+/* for parse.c and symtable*/
 typedef struct AutoOffset
 {
 	int	current_block;
@@ -161,7 +160,6 @@ typedef struct AutoOffset
 	int local_total_offset;
 	int auto_size;
 }AutoOffset;
-//--------------------
 
 
 /* op code */

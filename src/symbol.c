@@ -50,15 +50,15 @@ void sym_table_init(void)
 //   struct{ int a, int b, int c}  总比 穿三个 int a, b,c 参数要方便。 
 Symbol* lookup_global_sym(int type, char *name)
 {
-    assert(name != NULL);
-    SymbolTable *t;
+	assert(name != NULL);
+	SymbolTable *t;
     
     t = &table[hash(name)];
     
     while(t->value != NULL)
     {
         if(!strcmp(t->value->name,name)
-           &&t->value->type == type)
+		   &&t->value->type == type)
         {
             return t->value;
         }
@@ -69,8 +69,8 @@ Symbol* lookup_global_sym(int type, char *name)
 
 Symbol* insert_global_sym(int type, char * name)
 {
-    assert(name != NULL);
-    SymbolTable *t, *l;
+	assert(name != NULL);
+	SymbolTable *t, *l;
     Symbol *pnode;
     
     if(lookup_global_sym(type,name)!=NULL){
@@ -81,66 +81,66 @@ Symbol* insert_global_sym(int type, char * name)
     t = &table[hash(name)];
     
     while(t->next!=NULL){
-        l = t;
+    	l = t;
         t = t->next;
     }
     
     if(t == NULL){
-        t = (SymbolTable*)malloc(sizeof(SymbolTable));
-        if(!t){
-            fprintf(stderr,"malloc error!!");
-            return NULL;
-        }
-        l->next = t;
-    }
-    
+    	t = (SymbolTable*)malloc(sizeof(SymbolTable));
+    	if(!t){
+    		fprintf(stderr,"malloc error!!");
+        	return NULL;
+		}
+    	l->next = t;
+	}
+	
     pnode = (Symbol*)malloc(sizeof(Symbol));
     if(!pnode){
-        free(t);//free the first malloc
+    	free(t);//free the first malloc
         fprintf(stderr,"malloc error!!");
         return NULL;
-    }
-    
+	}
+	
     memset(pnode,0,sizeof(Symbol));
     strncpy(pnode->name, name, NAME_SIZE);
     pnode->type = type;
     
     if(type==FUNCTION){
-        
-        if(!strcmp("main",name)){
-            pnode->u.f.id = -10;
-        }else if(!strcmp("read",name)){
-            pnode->u.f.id = -11;
-        }else if(!strcmp("write",name)){
-            pnode->u.f.id = -12;
-        }else{
-            pnode->u.f.id = func_seq++;
-        }
-        
-        INIT_LIST_HEAD(&pnode->u.f.auto_head);
-        INIT_LIST_HEAD(&pnode->u.f.param_head);
-    }else{
-        
-    }
-    
-    t->value = pnode;
+    	
+    	if(!strcmp("main",name)){
+    		pnode->u.f.id = -10;
+		}else if(!strcmp("read",name)){
+			pnode->u.f.id = -11;
+		}else if(!strcmp("write",name)){
+			pnode->u.f.id = -12;
+		}else{
+			pnode->u.f.id = func_seq++;
+		}
+		
+		INIT_LIST_HEAD(&pnode->u.f.auto_head);
+		INIT_LIST_HEAD(&pnode->u.f.param_head);
+	}else{
+		
+	}
+	
+	t->value = pnode;
     
     return pnode;
 }
 
 void insert_local_var(ListHead *new, AutoOffset *a, ListHead *head)
 {
-    AutoInfo *auto_var = NULL;
-    auto_var = list_entry(new,AutoInfo,auto_list);
-    
-    auto_var->seq = a->local_seq;
-    auto_var->block_no = a->current_block;
-    auto_var->level = a->current_level;
-    auto_var->offset = current_function->u.f.param_size + STACK_BASE + a->local_total_offset;
-    a->local_total_offset += auto_var->size;
-    a->local_seq++;
-    
-    list_add_tail(head,new);
+	AutoInfo *auto_var = NULL;
+	auto_var = list_entry(new,AutoInfo,auto_list);
+	
+	auto_var->seq = a->local_seq;
+	auto_var->block_no = a->current_block;
+	auto_var->level = a->current_level;
+	auto_var->offset = current_function->u.f.param_size + STACK_BASE + a->local_total_offset;
+	a->local_total_offset += auto_var->size;
+	a->local_seq++;
+	
+	list_add_tail(head,new);
 }
 
 AutoInfo* lookup_local_var(char *name)
@@ -155,7 +155,7 @@ AutoInfo* lookup_local_var(char *name)
         if( !strcmp(p->name,name) )
         {
             if(p->block_no == 0||(p->block_no<=offset.current_block
-            &&p->block_no>offset.current_level-offset.current_block))
+			&&p->block_no>offset.current_level-offset.current_block))
             {
                 if(p->block_no > max)
                 {   //foreach list to choose max block_no
@@ -177,7 +177,7 @@ AutoInfo* lookup_local_var(char *name)
 
 void insert_param(ListHead *new,int seq,ListHead *head)
 {
-    ParamInfo *_param = NULL;
+	ParamInfo *_param = NULL;
     _param = list_entry(new, ParamInfo, param_list);
     _param->seq = seq;
     _param->offset = STACK_BASE + seq * _param->size;
@@ -187,20 +187,20 @@ void insert_param(ListHead *new,int seq,ListHead *head)
 
 ParamInfo* lookup_param(char *name)
 {
-    ListHead *temp = NULL;
-    ParamInfo *p = NULL;
+	ListHead *temp = NULL;
+	ParamInfo *p = NULL;
 
-    list_for_each(temp, &current_function->u.f.param_head)
-    {
-        if(!temp)
+	list_for_each(temp, &current_function->u.f.param_head)
+	{
+	    if(!temp)
             return NULL;
-        p = list_entry(temp, ParamInfo, param_list);
-        if(!p)
-            return NULL;
-        if(!strcmp(p->name, name)){
-            return p;
-        }
-    }
+	    p = list_entry(temp, ParamInfo, param_list);
+	    if(!p)
+	        return NULL;
+	    if(!strcmp(p->name, name)){
+	        return p;
+	    }
+	}
     return NULL;
 }
 
@@ -274,8 +274,8 @@ insert:
 
 
 /*
-extern int    current_block = 0;
-extern int    current_level = 0;
+extern int	current_block = 0;
+extern int	current_level = 0;
 extern int local_seq = 0;
 extern int local_total_offset = 0;
 extern int auto_size = 0;
