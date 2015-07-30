@@ -1,4 +1,9 @@
-
+    __      __     __    __    __
+   / /     /_/    / /    \ \  / /
+  / /      __    / /      \ \/ /
+ / /___   / /   / /___     |  | 
+/_____/  /_/   /_____/     |__| 
+===========================================================
 Lily is a C like complier based on a simple virtual machine
 
 http://github.com/chenai/lily
@@ -7,10 +12,4 @@ Copyright (c) 2015, Shiyang Wang.  All rights reserved.
 
 Use of this source code is governed by a MIT license 
 that can be found in the License file.
-```
-    __      __     __    __    __
-   / /     /_/    / /    \ \  / /
-  / /      __    / /      \ \/ /
- / /___   / /   / /___     |  | 
-/_____/  /_/   /_____/     |__| 
-```
+
